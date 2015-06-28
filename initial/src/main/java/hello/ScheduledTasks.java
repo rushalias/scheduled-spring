@@ -17,7 +17,7 @@ public class ScheduledTasks {
 
     static final Logger LOG = LoggerFactory.getLogger(ScheduledTasks.class);
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedDelay = 5000)
     public void reportCurrentTime() {
         String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         int sleepTime = new Random().nextInt(10000) + 5000;
