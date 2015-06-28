@@ -27,7 +27,7 @@ public class ScheduledTasks {
             sleep((long) sleepTime);
             dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             LOG.info("Done sleeping + " + dateTime);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }
