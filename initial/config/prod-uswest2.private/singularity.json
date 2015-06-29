@@ -1,0 +1,9 @@
+{
+  "requestId": "demoservice-private",
+  "resources": {
+    "cpus": 0.1,
+    "memoryMb": 256,
+    "numPorts": 2
+  },
+  "serviceBasePath": "/demo"
+}

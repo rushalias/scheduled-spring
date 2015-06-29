@@ -3,15 +3,24 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-scheduling-tasks</artifactId>
-    <version>0.1.0</version>
+    <groupId>com.opentable.coresvc</groupId>
+    <artifactId>points-sync-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.2.4.RELEASE</version>
     </parent>
+
+
+    <scm>
+        <connection>scm:git:git@github.com:rushalias/scheduled-spring.git</connection>
+        <developerConnection>scm:git:git@github.com:rushalias/scheduled-spring.git</developerConnection>
+        <url>https://github.com/rushalias/scheduled-spring</url>
+        <tag>HEAD</tag>
+    </scm>
+
 
     <properties>
         <java.version>1.8</java.version>
@@ -35,8 +44,55 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build a Docker image -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <executions>
+                    <execution>
+                        <id>build-docker</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>otpl-package-docker</executable>
+                            <arguments>
+                                <argument>${project.artifactId}</argument>
+                                <argument>${project.build.finalName}</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                                <!-- <argument>${project.build.directory}/${project.build.finalName}-jar-with-dependencies.jar</argument> -->
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>opentable.snapshot</id>
+            <name>opentable-snapshots</name>
+            <uniqueVersion>true</uniqueVersion>
+            <url>https://artifactory.otenv.com/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>opentable</id>
+            <name>opentable-internal</name>
+            <url>https://artifactory.otenv.com/internal</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
 
 </project>

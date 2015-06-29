@@ -1,0 +1,8 @@
+{
+  "requestId": "ci-pointsync-spring",
+  "resources": {
+    "cpus": 0.1,
+    "memoryMb": 256,
+    "numPorts": 2
+  }
+}
