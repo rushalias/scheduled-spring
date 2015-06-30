@@ -7,7 +7,7 @@
         </layout>
     </appender>
 
-    <logger name="hello" level="debug"/>
+    <logger name="package com.opentable.coresvc" level="debug"/>
 
 
     <root level="info">

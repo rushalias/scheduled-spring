@@ -4,5 +4,7 @@
     "cpus": 0.1,
     "memoryMb": 256,
     "numPorts": 2
-  }
+  },
+  "healthcheckUri" : null,
+  "considerHealthyAfterRunningForSeconds" : 60
 }

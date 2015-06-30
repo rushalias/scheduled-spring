@@ -24,6 +24,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH-mm-ss'Z'</maven.build.timestamp.format>
     </properties>
 
     <dependencies>
@@ -37,9 +38,30 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.opentable</groupId>
+            <artifactId>logging-spring</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}-${user.name}-jar-with-dependencies</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
