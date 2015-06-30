@@ -1,0 +1,9 @@
+--- 
+spring: 
+  application: 
+    name: points-synchronization-service
+  cloud: 
+    config: 
+      enabled: false
+      failFast: false
+      uri: "https://config-prod-uswest2.otenv.com/"

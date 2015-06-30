@@ -1,6 +1,5 @@
 package com.opentable.coresvc;
 
-import com.opentable.spring.logging.EnableLogging;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,7 +13,6 @@ import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableLogging
 public class Application implements SchedulingConfigurer {
 
     public static ConfigurableApplicationContext cac = null;

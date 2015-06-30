@@ -1,16 +1,123 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
-        </layout>
+<configuration threshold="TRACE">
+    <property scope="context" name="LOG_DIR" value="${MESOS_SANDBOX:-.}/logs"/>
+
+    <!-- As its name indicates, JMXConfigurator allows configuration of logback via JMX. In a nutshell, it lets you  -->
+    <!-- reconfigure logback from the default configuration file, from a designated file or URL, list loggers and    -->
+    <!-- modify logger levels. http://logback.qos.ch/manual/jmxConfig.html                                           -->
+    <!-- <jmxConfigurator/> -->
+
+    <!-- this basically should stop any logging to stdout? -->
+    <!-- removed &lt;%X{ot-requestid}&gt; from pattern, see http://logback.qos.ch/manual/mdc.html -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ALL</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} %-5p [%t] %logger{36} %M - %msg%n</pattern>
+        </encoder>
     </appender>
 
-    <logger name="package com.opentable.coresvc" level="debug"/>
+    <!-- Rolling access log -->
+    <!-- we don't have access log yet -->
+    <!--<appender name="ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+            <!--<level>ALL</level>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
 
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+            <!--&lt;!&ndash; daily rollover &ndash;&gt;-->
+            <!--<fileNamePattern>${LOG_DIR}/access.%d{yyyy-MM-dd}.log</fileNamePattern>-->
 
-    <root level="info">
-        <appender-ref ref="STDOUT"/>
+            <!--&lt;!&ndash; keep 30 days' worth of history &ndash;&gt;-->
+            <!--<maxHistory>30</maxHistory>-->
+        <!--</rollingPolicy>-->
+
+        <!--<encoder>-->
+            <!--<pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} &lt;%X{ot-requestid}&gt; [%t] %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
+
+    <!-- Rolling application log -->
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ALL</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_DIR}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} %-5p [%t] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <if condition='property("OT_ENV").equals("ci-uswest2") || property("OT_ENV").equals("pp-uswest2") || property("OT_ENV").equals("prod-uswest2")'>
+        <then>
+            <appender name="KAFKA" class="com.opentable.logging.KafkaAppender">
+                <encoder class="com.opentable.logging.JsonLogEncoder"/>
+                <if condition='property("OT_ENV").equals("ci-uswest2") || property("OT_ENV").equals("pp-uswest2")'>
+                    <then>
+                        <brokerList>
+                            vpcqa-logkafka-01.qasql.opentable.com:9092,vpcqa-logkafka-02.qasql.opentable.com:9092,vpcqa-logkafka-03.qasql.opentable.com:9092
+                        </brokerList>
+                    </then>
+                    <else>
+                        <brokerList>
+                            usw2-logkafka-01.otsql.opentable.com:9092,usw2-logkafka-02.otsql.opentable.com:9092,usw2-logkafka-03.otsql.opentable.com:9092
+                        </brokerList>
+                    </else>
+                </if>
+                <topic>logstash</topic>
+                <clientId>${TASK_REQUEST_ID:-${OT_APP}}-${INSTANCE_NO:-0}-${TASK_HOST:-${HOSTNAME}}</clientId>
+            </appender>
+        </then>
+    </if>
+
+    <if condition='property("OT_ENV").equals("ci-uswest2") || property("OT_ENV").equals("pp-uswest2") || property("OT_ENV").equals("prod-uswest2")'>
+        <then>
+            <appender name="ASYNC-KAFKA" class="ch.qos.logback.classic.AsyncAppender">
+                <appender-ref ref="KAFKA"/>
+                <queueSize>4096</queueSize>
+            </appender>
+        </then>
+    </if>
+
+    <logger name="com.opentable" level="INFO"/>
+    <logger name="com.opentable.coresvc" level="debug"/>
+
+    <!-- Discovery is uninteresting when it's working right -->
+    <logger name="com.opentable.service.discovery" level="INFO"/>
+
+    <!-- HttpClient is pretty verbose -->
+    <logger name="com.opentable.httpclient.factory" level="INFO"/>
+
+    <!-- DefaultRedirectStrategy prints out a DEBUG for every redirect... -->
+    <logger name="com.opentable.etcd.AlwaysRedirectStrategy" level="INFO"/>
+
+    <logger name="kafka" level="WARN"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="APP"/>
+        <if condition='property("OT_ENV").equals("ci-uswest2") || property("OT_ENV").equals("pp-uswest2") || property("OT_ENV").equals("prod-uswest2")'>
+            <then>
+                <appender-ref ref="ASYNC-KAFKA"/>
+            </then>
+        </if>
     </root>
+
+    <include resource="logback-config.xml" optional="true"/>
 </configuration>

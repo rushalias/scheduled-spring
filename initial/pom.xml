@@ -25,6 +25,7 @@
     <properties>
         <java.version>1.8</java.version>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH-mm-ss'Z'</maven.build.timestamp.format>
+        <dep.otj-logging.version>1.6.4</dep.otj-logging.version>
     </properties>
 
     <dependencies>
@@ -45,18 +46,35 @@
         </dependency>
 
         <dependency>
-            <groupId>com.opentable</groupId>
-            <artifactId>logging-spring</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
 
+        <dependency>
+            <groupId>com.opentable.components</groupId>
+            <artifactId>otj-logging</artifactId>
+            <version>${dep.otj-logging.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.opentable.components</groupId>
+            <artifactId>otj-logging-core</artifactId>
+            <version>${dep.otj-logging.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.opentable.components</groupId>
+            <artifactId>otj-logging-kafka</artifactId>
+            <version>${dep.otj-logging.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+            <version>2.7.8</version>
+        </dependency>
 
     </dependencies>
 

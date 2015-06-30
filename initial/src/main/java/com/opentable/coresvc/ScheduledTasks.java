@@ -26,18 +26,18 @@ public class ScheduledTasks implements ExitCodeGenerator {
         String dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         int sleepTime = new Random().nextInt(5000) + 1000;
 
-        LOG.info("Starting process {}: now = {}, duration = {}", invocationCounter, dateTime, sleepTime);
-        LOG.debug("Sleeping for " + sleepTime);
+        LOG.info("Starting process XYXXYYX {}: now = {}, duration = {}", invocationCounter, dateTime, sleepTime);
+        LOG.debug("Sleeping for XYXXYYX " + sleepTime);
         try {
             sleep((long) sleepTime);
             dateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            LOG.debug("Done sleeping + " + dateTime);
+            LOG.debug("Done sleeping XYXXYYX " + dateTime);
         } catch (InterruptedException ignored) {
         }
 
         int ic = invocationCounter.incrementAndGet();
-        if (ic > 20) {
-            LOG.error("Exiting....");
+        if (ic > 200 ) {
+            LOG.error("Exiting.... XYXXYYX ");
             System.exit(-1);
             Application.cac.close();
             //SpringApplication.exit(Application.cac,this);
